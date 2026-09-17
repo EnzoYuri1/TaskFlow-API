@@ -1,58 +1,86 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🚀 TaskFlow API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+TaskFlow-API is a professional RESTful API built with **Laravel 11**, following **Domain-Driven Design (DDD)** principles. It's designed to manage tasks efficiently, featuring UUIDs for security, a clean architecture, and a high-quality interactive documentation via **Scalar**.
 
-## About Laravel
+## 🛠️ Tech Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Framework:** Laravel 11
+- **Language:** PHP 8.4
+- **Architecture:** Domain-Driven Design (DDD)
+- **Database:** SQLite (Local development)
+- **Authentication:** Laravel Sanctum (Bearer Tokens)
+- **Documentation:** Scramble & Scalar UI
+- **Primary Keys:** UUIDs
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🔑 Demo Credentials (For Testing)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+If you want to test the API, use the following demonstration account:
 
-## Learning Laravel
+- **Email:** `demo@gmail.com`
+- **Password:** `password123`
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**How to test:**
+1. Make a `POST` request to `/api/login` with the credentials above.
+2. Copy the `access_token` from the response.
+3. Use the token in the header of all other requests:
+   `Authorization: Bearer {your_token}`
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🚀 Getting Started
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+### Prerequisites
+- PHP 8.4+
+- Composer
 
-## Agentic Development
+### Installation
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/EnzoYuri1/TaskFlow-API.git
+   cd TaskFlow-API
+   ```
 
-```bash
-composer require laravel/boost --dev
+2. Install dependencies:
+   ```bash
+   composer install
+   ```
 
-php artisan boost:install
-```
+3. Set up the environment:
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+4. Run migrations and seed the demo user:
+   ```bash
+   php artisan migrate
+   php artisan db:seed
+   ```
 
-## Contributing
+5. Start the server:
+   ```bash
+   php artisan serve
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 📖 API Endpoints
 
-## Code of Conduct
+### Authentication
+- `POST /api/login` - Authenticate and receive a token.
+- `POST /api/logout` - Invalidate current token.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Tasks (Protected)
+- `GET /api/tasks` - List all tasks.
+- `POST /api/tasks` - Create a new task.
+- `GET /api/tasks/{id}` - Get task details.
+- `PUT /api/tasks/{id}` - Update a task.
+- `DELETE /api/tasks/{id}` - Remove a task.
+- `PATCH /api/tasks/{id}/complete` - Mark task as completed.
 
-## Security Vulnerabilities
+## 🏗️ Architecture
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+This project uses a **DDD (Domain-Driven Design)** approach to ensure scalability and maintainability:
+- `app/Domains/Tasks/...` - All business logic, models, and services related to the Tasks domain.
+- `app/Http/Requests/...` - Centralized input validation.
+- `app/Domains/Tasks/Resources/...` - JSON transformation layer.
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+Developed by [Enzo Yuri](https://github.com/EnzoYuri1)
