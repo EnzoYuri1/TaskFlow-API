@@ -2,33 +2,33 @@
 
 namespace App\Http\Requests;
 
+use App\Domains\Tasks\Enums\TaskStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Domains\Tasks\Enums\TaskStatus;
 
 class UpdateTaskRequest extends FormRequest
 {
+    /**
+     * Determina se o usuário está autorizado a fazer esta requisição.
+     */
     public function authorize(): bool
     {
         return true;
     }
 
+    /**
+     * Define as regras de validação para a atualização de uma tarefa.
+     *
+     * O uso de 'sometimes' permite atualizações parciais (PATCH), validando
+     * apenas os campos que foram enviados na requisição.
+     */
     public function rules(): array
     {
         return [
-            'title' => 'sometimes|string|max:255',
-            'description' => 'nullable|string',
-            'status' => ['sometimes', Rule::enum(TaskStatus::class)],
-            'due_date' => 'nullable|date',
+            'title' => 'sometimes|nullable|string|max:255',
+            'description' => 'sometimes|nullable|string',
+            'status' => ['sometimes', 'nullable', Rule::enum(TaskStatus::class)],
+            'due_date' => 'sometimes|nullable|date',
         ];
-    }
-
-    public function withValidator($validator)
-    {
-        $validator->after(function ($validator) {
-            if ($this->has('status') && $this->status === null) {
-                $validator->errors()->add('status', 'O status não pode ser nulo.');
-            }
-        });
     }
 }
