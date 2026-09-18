@@ -2,13 +2,12 @@
 
 namespace App\Domains\Tasks\Controller;
 
-use App\Http\Controllers\Controller;
+use App\Domains\Tasks\Resources\TaskResource;
 use App\Domains\Tasks\Service\TaskService;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
-use App\Domains\Tasks\Resources\TaskResource;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class TaskController extends Controller
 {
@@ -22,6 +21,7 @@ class TaskController extends Controller
     public function index(): JsonResponse
     {
         $tasks = $this->taskService->getAllTasks();
+
         return response()->json(TaskResource::collection($tasks), 200, [], JSON_UNESCAPED_UNICODE);
     }
 
@@ -31,6 +31,7 @@ class TaskController extends Controller
     public function store(StoreTaskRequest $request): JsonResponse
     {
         $task = $this->taskService->createTask($request->validated());
+
         return response()->json(new TaskResource($task), 201, [], JSON_UNESCAPED_UNICODE);
     }
 
@@ -40,6 +41,7 @@ class TaskController extends Controller
     public function show(string $id): JsonResponse
     {
         $task = $this->taskService->getTaskById($id);
+
         return response()->json(new TaskResource($task), 200, [], JSON_UNESCAPED_UNICODE);
     }
 
@@ -49,6 +51,7 @@ class TaskController extends Controller
     public function update(UpdateTaskRequest $request, string $id): JsonResponse
     {
         $task = $this->taskService->updateTask($id, $request->validated());
+
         return response()->json(new TaskResource($task), 200, [], JSON_UNESCAPED_UNICODE);
     }
 
@@ -58,6 +61,7 @@ class TaskController extends Controller
     public function destroy(string $id): JsonResponse
     {
         $this->taskService->deleteTask($id);
+
         return response()->json(null, 204);
     }
 
@@ -67,6 +71,7 @@ class TaskController extends Controller
     public function complete(string $id): JsonResponse
     {
         $task = $this->taskService->markAsCompleted($id);
+
         return response()->json(new TaskResource($task), 200, [], JSON_UNESCAPED_UNICODE);
     }
 }
