@@ -2,14 +2,14 @@
 
 namespace App\Domains\Tasks\Service;
 
-use App\Domains\Tasks\Model\Task;
 use App\Domains\Tasks\Enums\TaskStatus;
+use App\Domains\Tasks\Model\Task;
 use Illuminate\Support\Collection;
 
 class TaskService
 {
     /**
-     * Create a new task.
+     * Cria uma nova tarefa no sistema.
      */
     public function createTask(array $data): Task
     {
@@ -22,18 +22,30 @@ class TaskService
     }
 
     /**
-     * Update an existing task.
+     * Atualiza uma tarefa existente.
+     *
+     * Filtra valores nulos para campos obrigatórios para evitar erros
+     * quando a interface envia campos vazios em requisições parciais.
      */
     public function updateTask(string $id, array $data): Task
     {
         $task = Task::findOrFail($id);
+
+        // Remove valores nulos de campos não-anuláveis para evitar erros de banco de dados
+        // Isso permite que ferramentas de UI enviem nulls para campos não alterados.
+        foreach (['title', 'status'] as $field) {
+            if (array_key_exists($field, $data) && is_null($data[$field])) {
+                unset($data[$field]);
+            }
+        }
+
         $task->update($data);
 
         return $task;
     }
 
     /**
-     * List all tasks.
+     * Recupera todas as tarefas cadastradas.
      */
     public function getAllTasks(): Collection
     {
@@ -41,7 +53,7 @@ class TaskService
     }
 
     /**
-     * Get a single task by ID.
+     * Recupera os detalhes de uma tarefa específica pelo ID.
      */
     public function getTaskById(string $id): Task
     {
@@ -49,7 +61,7 @@ class TaskService
     }
 
     /**
-     * Delete a task.
+     * Remove permanentemente uma tarefa do sistema.
      */
     public function deleteTask(string $id): bool
     {
@@ -57,7 +69,7 @@ class TaskService
     }
 
     /**
-     * Mark a task as completed.
+     * Marca uma tarefa como concluída.
      */
     public function markAsCompleted(string $id): Task
     {
