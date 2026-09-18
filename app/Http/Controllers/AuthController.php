@@ -2,59 +2,61 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
     /**
-     * Autenticar usuário e retornar token
+     * Autentica o usuário e gera um token de acesso via Laravel Sanctum.
+     *
+     * @throws ValidationException
      */
     public function login(Request $request): JsonResponse
     {
+        // Validação básica de credenciais
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        // Tenta autenticar o usuário com as credenciais fornecidas
+        if (Auth::attempt($request->only('email', 'password'))) {
+            $user = Auth::user();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['As credenciais fornecidas estão incorretas.'],
-            ]);
+            // Gera um novo Personal Access Token do Sanctum
+            $token = $user->createToken('access_token')->plainTextToken;
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Login realizado com sucesso!',
+                'data' => [
+                    'access_token' => $token,
+                    'token_type' => 'Bearer',
+                    'user' => $user,
+                ],
+            ], 200, [], JSON_UNESCAPED_UNICODE);
         }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Autenticação realizada com sucesso!',
-            'data' => [
-                'access_token' => $token,
-                'token_type' => 'Bearer',
-                'expires_in' => 'No expiration',
-                'user' => [
-                    'name' => $user->name,
-                    'email' => $user->email,
-                ],
-            ],
-        ], 200, [], JSON_UNESCAPED_UNICODE);
+        // Caso a autenticação falhe, retorna erro de validação
+        throw ValidationException::withMessages([
+            'email' => ['As credenciais fornecidas estão incorretas.'],
+        ]);
     }
 
     /**
-     * Logout do usuário
+     * Revoga o token de acesso atual do usuário, encerrando a sessão da API.
      */
     public function logout(Request $request): JsonResponse
     {
+        // Deleta o token que foi utilizado para autenticar a requisição atual
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Logout realizado com sucesso!'
+            'message' => 'Logout realizado com sucesso!',
         ], 200, [], JSON_UNESCAPED_UNICODE);
     }
 }
